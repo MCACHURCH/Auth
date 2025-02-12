@@ -20,13 +20,8 @@ const firebaseConfig = {
   appId: "1:618751378522:web:769afd53fc31f39362c463",
   measurementId: "G-5P08NL17QD",
 };
-
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
-const auth = getAuth();
-
-// Sign in anonymously (if needed for access control)
-signInAnonymously(auth).catch((error) => console.error("Auth Error:", error));
 
 // Function to upload PDF to Firebase Storage
 async function uploadPDF(pdfBlob, fileName) {
@@ -40,32 +35,91 @@ async function uploadPDF(pdfBlob, fileName) {
   }
 }
 
-// Convert form to PDF and upload
-async function handleFormSubmission() {
-  const pdfBlob = await generatePDF(); // Implement generatePDF()
+// Function to handle form submission
+export async function handleFormSubmission(signaturePad) {
+  const formData = {
+    student_name: document.getElementById("student_name").value,
+    dob: document.getElementById("dob").value,
+    guardian1_name: document.getElementById("guardian1_name").value,
+    guardian1_phone: document.getElementById("guardian1_phone").value,
+    guardian2_name: document.getElementById("guardian2_name").value || "N/A",
+    guardian2_phone: document.getElementById("guardian2_phone").value || "N/A",
+    emergency_name: document.getElementById("emergency_name").value,
+    emergency_relationship: document.getElementById("emergency_relationship")
+      .value,
+    emergency_phone: document.getElementById("emergency_phone").value,
+    medical_info: document.getElementById("medical_info").value || "None",
+    signature_date: document.getElementById("signature_date").value,
+    signature: signaturePad.toDataURL("image/png"), // Convert signature to image
+  };
+
+  if (
+    !formData.student_name ||
+    !formData.dob ||
+    !formData.guardian1_name ||
+    !formData.guardian1_phone
+  ) {
+    alert("Please fill in all required fields.");
+    return;
+  }
+
+  // Generate PDF with Signature
+  const pdfBlob = await generatePDF(formData);
   const fileName = `signed_document_${Date.now()}.pdf`;
+
+  // Upload PDF to Firebase
   const pdfURL = await uploadPDF(pdfBlob, fileName);
+
   if (pdfURL) {
-    sendEmailWithPDF(pdfURL); // Implement sendEmailWithPDF()
+    alert("Form submitted successfully!");
+    console.log("PDF Uploaded:", pdfURL);
+  } else {
+    alert("Error submitting form.");
   }
 }
 
-document.getElementById("submitBtn").addEventListener("click", async () => {
-  const studentName = document.getElementById("studentName").value;
-  const parent1Name = document.getElementById("parent1Name").value;
-  const parent2Name = document.getElementById("parent2Name").value || "N/A";
-  const signature = document.getElementById("signaturePad").toDataURL();
+// Function to generate PDF with signature
+async function generatePDF(formData) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
 
-  const pdfBlob = await generatePDF(
-    studentName,
-    parent1Name,
-    parent2Name,
-    signature
+  doc.setFont("helvetica", "bold");
+  doc.text("Student Authorization Form", 10, 10);
+  doc.setFont("helvetica", "normal");
+  doc.text(`Student Name: ${formData.student_name}`, 10, 20);
+  doc.text(`Date of Birth: ${formData.dob}`, 10, 30);
+  doc.text(`Parent Name: ${formData.guardian1_name}`, 10, 40);
+  doc.text(`Parent Phone: ${formData.guardian1_phone}`, 10, 50);
+  doc.text(`Parent Name: ${formData.guardian2_name}`, 10, 40);
+  doc.text(`Parent Phone: ${formData.guardian2_phone}`, 10, 50);
+  doc.text(`Emergency Contact: ${formData.emergency_name}`, 10, 60);
+  doc.text(`Relationship: ${formData.emergency_relationship}`, 10, 70);
+  doc.text(`Phone: ${formData.emergency_phone}`, 10, 80);
+  doc.text(`Medical Info: ${formData.medical_info}`, 10, 90);
+  doc.text(`Date Signed: ${formData.signature_date}`, 10, 100);
+
+  // Add certification statement
+  doc.text(
+    "I hereby certify that the prior information is correct and give permission for the",
+    10,
+    110
   );
-  const fileName = `signed_document_${Date.now()}.pdf`;
-  const pdfURL = await uploadPDF(pdfBlob, fileName);
+  doc.text(
+    "listed student to participate in the event/activity specified above.",
+    10,
+    120
+  );
+  doc.text(
+    "In case of an emergency, I give MCA staff permission to seek medical care.",
+    10,
+    130
+  );
 
-  if (pdfURL) {
-    sendEmailWithPDF(pdfURL);
+  // Add signature image
+  if (formData.signature) {
+    doc.addImage(formData.signature, "PNG", 10, 140, 80, 40);
   }
-});
+
+  return doc.output("blob");
+}
+
