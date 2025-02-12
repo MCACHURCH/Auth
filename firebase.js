@@ -90,34 +90,34 @@ async function generatePDF(formData) {
   doc.text(`Date of Birth: ${formData.dob}`, 10, 30);
   doc.text(`Parent Name: ${formData.guardian1_name}`, 10, 40);
   doc.text(`Parent Phone: ${formData.guardian1_phone}`, 10, 50);
-  doc.text(`Parent Name: ${formData.guardian2_name}`, 10, 40);
-  doc.text(`Parent Phone: ${formData.guardian2_phone}`, 10, 50);
-  doc.text(`Emergency Contact: ${formData.emergency_name}`, 10, 60);
-  doc.text(`Relationship: ${formData.emergency_relationship}`, 10, 70);
-  doc.text(`Phone: ${formData.emergency_phone}`, 10, 80);
-  doc.text(`Medical Info: ${formData.medical_info}`, 10, 90);
-  doc.text(`Date Signed: ${formData.signature_date}`, 10, 100);
+  doc.text(`Parent Name: ${formData.guardian2_name}`, 10, 60);
+  doc.text(`Parent Phone: ${formData.guardian2_phone}`, 10, 70);
+  doc.text(`Emergency Contact: ${formData.emergency_name}`, 10, 80);
+  doc.text(`Relationship: ${formData.emergency_relationship}`, 10, 90);
+  doc.text(`Phone: ${formData.emergency_phone}`, 10, 100);
+  doc.text(`Medical Info: ${formData.medical_info}`, 10, 110);
+  doc.text(`Date Signed: ${formData.signature_date}`, 10, 120);
 
   // Add certification statement
   doc.text(
     "I hereby certify that the prior information is correct and give permission for the",
     10,
-    110
+    130
   );
   doc.text(
     "listed student to participate in the event/activity specified above.",
     10,
-    120
+    140
   );
   doc.text(
     "In case of an emergency, I give MCA staff permission to seek medical care.",
     10,
-    130
+    150
   );
 
   // Add signature image
   if (formData.signature) {
-    doc.addImage(formData.signature, "PNG", 10, 140, 80, 40);
+    doc.addImage(formData.signature, "PNG", 10, 160, 80, 40);
   }
 
   return doc.output("blob");
