@@ -88,7 +88,7 @@ async function generatePDF(formData) {
   // Add signature image
   if (formData.signature) {
     doc.setFont("helvetica", "normal");
-    doc.text("Signature:", 10, y);
+    doc.text("", 10, y);
     doc.addImage(formData.signature, "PNG", 30, y - 5, 80, 40);
     y += 50;
   }
