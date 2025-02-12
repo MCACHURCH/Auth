@@ -122,4 +122,33 @@ async function generatePDF(formData) {
 
   return doc.output("blob");
 }
+const canvas = document.getElementById("signature-pad");
+const signaturePad = new SignaturePad(canvas, {
+  backgroundColor: "white",
+  penColor: "black",
+});
+
+function resizeCanvas() {
+  const ratio = Math.max(window.devicePixelRatio || 1, 1);
+  canvas.width = canvas.offsetWidth * ratio;
+  canvas.height = canvas.offsetHeight * ratio;
+  const ctx = canvas.getContext("2d");
+  ctx.scale(ratio, ratio);
+}
+
+// Ensure the signature pad resizes correctly
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
+document.getElementById("clear-signature").addEventListener("click", () => {
+  signaturePad.clear();
+});
+
+document.getElementById("submitBtn").addEventListener("click", async () => {
+  if (signaturePad.isEmpty()) {
+    alert("Please sign the form before submitting.");
+    return;
+  }
+  await handleFormSubmission(signaturePad);
+});
 
