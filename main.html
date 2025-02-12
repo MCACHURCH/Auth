@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MCA Snow Trails Authorization Form</title>
+    <script
+      src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"
+      defer
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
+      defer
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"
+      defer
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+    <script src="https://apis.google.com/js/api.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        max-width: 600px;
+        margin: auto;
+      }
+      canvas {
+        border: 1px solid #000;
+        width: 100%;
+        height: 150px;
+      }
+      button {
+        padding: 10px;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>MCA Snow Trails Authorization Form</h2>
+    <p>
+      I give my permission to the student listed below to attend/participate in:
+    </p>
+    <p><strong>Snow Trails Tubing trip on February 15, 2025</strong></p>
+
+    <form id="authForm">
+      <label>Student Name:</label>
+      <input type="text" id="student_name" required /><br /><br />
+
+      <label>Date of Birth:</label>
+      <input type="date" id="dob" required /><br /><br />
+
+      <label>Student Address:</label>
+      <input type="text" id="student_address" required /><br /><br />
+
+      <h3>Parent/Guardian Information</h3>
+      <label>First Parent/Guardian Name:</label>
+      <input type="text" id="guardian1_name" required /><br /><br />
+
+      <label>Phone Number:</label>
+      <input type="tel" id="guardian1_phone" required /><br /><br />
+
+      <label>Second Parent/Guardian Name:</label>
+      <input type="text" id="guardian2_name" /><br /><br />
+
+      <label>Phone Number:</label>
+      <input type="tel" id="guardian2_phone" /><br /><br />
+
+      <h3>Emergency Contact</h3>
+      <label>Name:</label>
+      <input type="text" id="emergency_name" required /><br /><br />
+
+      <label>Phone Number:</label>
+      <input type="tel" id="emergency_phone" required /><br /><br />
+
+      <h3>Medical/Allergy Information</h3>
+      <textarea id="medical_info" rows="4"></textarea><br /><br />
+
+      <h3>Authorization</h3>
+      <p>
+        Authorization for travel and medical care: I hereby certify that the
+        prior information is correct and give permission for the listed student
+        to participate in the event/activity specified above. In the case of an
+        illness or medical emergency I give MCA staff and volunteers permission
+        to seek out professional medical care for the student.
+      </p>
+
+      <h3>Signature</h3>
+      <canvas id="signatureCanvas"></canvas>
+      <button type="button" onclick="clearSignature()">Clear Signature</button
+      ><br /><br />
+
+      <label>Date Signed:</label>
+      <input type="date" id="signature_date" required /><br /><br />
+
+      <button type="submit">Submit</button>
+    </form>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        emailjs.init("4txXtrtsBSv0JiH1V");
+
+        const canvas = document.getElementById("signatureCanvas");
+        canvas.width = canvas.offsetWidth;
+        canvas.height = 150;
+        const signaturePad = new SignaturePad(canvas);
+
+        window.clearSignature = function () {
+          signaturePad.clear();
+        };
+
+        document
+          .getElementById("authForm")
+          .addEventListener("submit", async function (event) {
+            event.preventDefault();
+            if (signaturePad.isEmpty()) {
+              alert("Please sign before submitting.");
+              return;
+            }
+
+            const pdf = new jspdf.jsPDF();
+            pdf.setFontSize(12);
+            pdf.text("MCA Snow Trails Tubing Trip Authorization Form", 10, 10);
+            pdf.text(
+              "Student Name: " + document.getElementById("student_name").value,
+              10,
+              20
+            );
+            pdf.text(
+              "Date of Birth: " + document.getElementById("dob").value,
+              10,
+              30
+            );
+            pdf.text(
+              "Student Address: " +
+                document.getElementById("student_address").value,
+              10,
+              40
+            );
+            pdf.text(
+              "First Parent/Guardian: " +
+                document.getElementById("guardian1_name").value,
+              10,
+              50
+            );
+            pdf.text(
+              "Phone: " + document.getElementById("guardian1_phone").value,
+              10,
+              60
+            );
+            pdf.text(
+              "Second Parent/Guardian: " +
+                document.getElementById("guardian2_name").value,
+              10,
+              70
+            );
+            pdf.text(
+              "Phone: " + document.getElementById("guardian2_phone").value,
+              10,
+              80
+            );
+            pdf.text(
+              "Emergency Contact: " +
+                document.getElementById("emergency_name").value,
+              10,
+              90
+            );
+            pdf.text(
+              "Emergency Phone: " +
+                document.getElementById("emergency_phone").value,
+              10,
+              100
+            );
+            pdf.text(
+              "Medical Info: " + document.getElementById("medical_info").value,
+              10,
+              110
+            );
+            pdf.text(
+              "Authorization: I hereby certify that the prior information is correct and give permission for the listed student to participate in the event/activity specified above. In the case of an illness or medical emergency I give MCA staff and volunteers permission to seek out professional medical care for the student.",
+              10,
+              130,
+              { maxWidth: 180 }
+            );
+
+            const imgData = signaturePad.toDataURL("image/png");
+            pdf.addImage(imgData, "PNG", 10, 140, 100, 50);
+
+            pdf.text(
+              "Date Signed: " + document.getElementById("signature_date").value,
+              10,
+              120
+            );
+
+            const pdfBlob = pdf.output("blob");
+            const formData = new FormData();
+            formData.append("file", pdfBlob, "authorization_form.pdf");
+          });
+      });
+    </script>
+  </body>
+</html>
