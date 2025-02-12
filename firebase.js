@@ -39,18 +39,64 @@ async function generatePDF(formData) {
   const doc = new jsPDF();
 
   doc.setFont("helvetica", "bold");
-  doc.text("Student Authorization Form", 10, 10);
+  doc.text("Snow Trails Authorization Form", 10, 10);
   doc.setFont("helvetica", "normal");
 
   let y = 20;
+
+  // Define a mapping of field names to readable labels
+  const fieldLabels = {
+    student_name: "Student Name",
+    dob: "Date of Birth",
+    event_name: "Event Name",
+    guardian1_name: "Parent Name",
+    guardian1_phone: "Parent Phone",
+    guardian2_name: "Parent Name",
+    guardian2_phone: "Parent Phone",
+    emergency_name: "Emergency Contact Name",
+    emergency_relationship: "Emergency Relationship",
+    emergency_phone: "Emergency Contact Phone",
+    medical_info: "Medical Information",
+    signature: "",
+    signature_date: "Date Signed",
+  };
+
+  // Loop through formData and print readable labels
   for (const [key, value] of Object.entries(formData)) {
-    doc.text(`${key.replace("_", " ")}: ${value}`, 10, y);
-    y += 10;
+    if (key !== "signature") {
+      // Skip signature for now
+      const label = fieldLabels[key] || key.replace(/_/g, " "); // Use mapping, fallback to replacing underscores
+      doc.text(`${label}: ${value}`, 10, y);
+      y += 10;
+    }
   }
 
+  // Add certification statement
+  y += 10;
+  doc.setFont("helvetica", "italic");
+  doc.text(
+    "I hereby certify that the prior information is correct and give permission \n" +
+      "for the listed student to participate in the event/activity specified above. \n" +
+      "In the case of an illness or medical emergency I give MCA staff and volunteers \n" +
+      "permission tto seek out professional medical care for the student.",
+    10,
+    y
+  );
+
+  y += 30;
+
+  // Add signature image
   if (formData.signature) {
-    doc.addImage(formData.signature, "PNG", 10, y, 80, 40);
+    doc.setFont("helvetica", "normal");
+    doc.text("Signature:", 10, y);
+    doc.addImage(formData.signature, "PNG", 30, y - 5, 80, 40);
+    y += 50;
   }
+
+  // Generate a dynamic filename
+  const studentName = formData.student_name?.replace(/\s+/g, "_") || "Student";
+  const eventName = formData.event_name?.replace(/\s+/g, "_") || "Event";
+  const filename = `${studentName}_${eventName}_Authorization_Form.pdf`;
 
   return doc.output("blob");
 }
