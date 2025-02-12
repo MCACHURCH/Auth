@@ -31,79 +31,56 @@
     </h2>
     <h3>Snow Trails Tubing on February 15, 2025</h3>
 
-    <label>Student Name:</label>
-    <input type="text" id="student_name" required /><br /><br />
+    <form id="permissionForm">
+      <label>Student Name:</label>
+      <input type="text" id="student_name" required /><br /><br />
 
-    <label>Date of Birth:</label>
-    <input type="date" id="dob" required /><br /><br />
+      <label>Date of Birth:</label>
+      <input type="date" id="dob" required /><br /><br />
 
-    <label>Parent/Guardian Name:</label>
-    <input type="text" id="guardian1_name" required /><br /><br />
+      <label>Parent/Guardian Name:</label>
+      <input type="text" id="guardian1_name" required /><br /><br />
 
-    <label>Parent/Guardian Phone:</label>
-    <input type="tel" id="guardian1_phone" required /><br /><br />
+      <label>Parent/Guardian Phone:</label>
+      <input type="tel" id="guardian1_phone" required /><br /><br />
 
-    <label>Additional Parent/Guardian Name (Optional):</label>
-    <input type="text" id="guardian2_name" /><br /><br />
+      <label>Additional Parent/Guardian Name (Optional):</label>
+      <input type="text" id="guardian2_name" /><br /><br />
 
-    <label>Additional Parent/Guardian Phone (Optional):</label>
-    <input type="tel" id="guardian2_phone" /><br /><br />
+      <label>Additional Parent/Guardian Phone (Optional):</label>
+      <input type="tel" id="guardian2_phone" /><br /><br />
 
-    <label>Emergency Contact Name:</label>
-    <input type="text" id="emergency_name" required /><br /><br />
+      <label>Emergency Contact Name:</label>
+      <input type="text" id="emergency_name" required /><br /><br />
 
-    <label>Emergency Contact Relationship:</label>
-    <input type="text" id="emergency_relationship" required /><br /><br />
+      <label>Emergency Contact Relationship:</label>
+      <input type="text" id="emergency_relationship" required /><br /><br />
 
-    <label>Emergency Contact Phone:</label>
-    <input type="tel" id="emergency_phone" required /><br /><br />
+      <label>Emergency Contact Phone:</label>
+      <input type="tel" id="emergency_phone" required /><br /><br />
 
-    <label>Medical Info (Optional):</label>
-    <textarea id="medical_info"></textarea><br /><br />
+      <label>Medical Info (Optional):</label>
+      <textarea id="medical_info"></textarea><br /><br />
 
-    <p>
-      <strong>Certification:</strong>
-      I hereby certify that the prior information is correct and give permission
-      for the listed student to participate in the event/activity specified
-      above. In the case of an illness or medical emergency, I give MCA staff
-      and volunteers permission to seek out professional medical care for the
-      student.
-    </p>
+      <p>
+        <strong>Certification:</strong> I hereby certify that the prior
+        information is correct and give permission for the listed student to
+        participate in the event/activity specified above.
+      </p>
 
-    <label>Date Signed:</label>
-    <input type="date" id="signature_date" required /><br /><br />
+      <label>Date Signed:</label>
+      <input type="date" id="signature_date" required /><br /><br />
 
-    <label>Signature:</label>
-    <canvas id="signature-pad" width="600" height="150"></canvas><br />
-    <button id="clear-signature">Clear Signature</button><br /><br />
+      <label>Signature:</label>
+      <canvas id="signature-pad"></canvas><br />
+      <button type="button" id="clear-signature">Clear Signature</button
+      ><br /><br />
 
-    <button id="submitBtn">Submit</button>
+      <button type="submit" id="submitBtn">Submit</button>
+    </form>
 
-    <script type="module">
-      import { handleFormSubmission } from "./firebase.js";
-
-      const canvas = document.getElementById("signature-pad");
-      const signaturePad = new SignaturePad(canvas, {
-        backgroundColor: "white",
-        penColor: "black",
-      });
-
-      document
-        .getElementById("clear-signature")
-        .addEventListener("click", () => {
-          signaturePad.clear();
-        });
-
-      document
-        .getElementById("submitBtn")
-        .addEventListener("click", async () => {
-          if (signaturePad.isEmpty()) {
-            alert("Please sign the form before submitting.");
-            return;
-          }
-          await handleFormSubmission(signaturePad);
-        });
-    </script>
+    <script type="module" src="./firebase.js"></script>
   </body>
 </html>
+
 
