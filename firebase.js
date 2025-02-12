@@ -73,6 +73,7 @@ export async function handleFormSubmission(signaturePad) {
   if (pdfURL) {
     alert("Form submitted successfully!");
     console.log("PDF Uploaded:", pdfURL);
+    location.reload(); // Refresh the page after successful submission
   } else {
     alert("Error submitting form.");
   }
@@ -149,6 +150,13 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
     alert("Please sign the form before submitting.");
     return;
   }
-  await handleFormSubmission(signaturePad);
+
+  try {
+    await handleFormSubmission(signaturePad);
+  } catch (error) {
+    alert("There was an error submitting the form. Please try again.");
+    console.error("Submission error:", error);
+  }
 });
+
 
