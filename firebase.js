@@ -78,7 +78,7 @@ async function generatePDF(formData) {
     "I hereby certify that the prior information is correct and give permission \n" +
       "for the listed student to participate in the event/activity specified above. \n" +
       "In the case of an illness or medical emergency I give MCA staff and volunteers \n" +
-      "permission tto seek out professional medical care for the student.",
+      "permission to seek out professional medical care for the student.",
     10,
     y
   );
